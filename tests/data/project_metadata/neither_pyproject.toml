@@ -2,5 +2,5 @@
 name = "test"
 version = "1.0.0"
 
-[tool.black]
+[tool.blax]
 line-length = 79

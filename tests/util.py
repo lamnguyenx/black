@@ -10,12 +10,12 @@ from functools import partial
 from pathlib import Path
 from typing import Any, Collection, Iterator, List, Optional, Tuple
 
-import black
-from black.const import DEFAULT_LINE_LENGTH
-from black.debug import DebugVisitor
-from black.mode import TargetVersion
-from black.output import diff, err, out
-from black.ranges import parse_line_ranges
+import blax
+from blax.const import STYLE_DEFAULT
+from blax.debug import DebugVisitor
+from blax.mode import TargetVersion
+from blax.output import diff, err, out
+from blax.ranges import parse_line_ranges
 
 from . import conftest
 
@@ -35,14 +35,72 @@ PY36_VERSIONS = {
     TargetVersion.PY39,
 }
 
-DEFAULT_MODE = black.Mode()
-ff = partial(black.format_file_in_place, mode=DEFAULT_MODE, fast=True)
-fs = partial(black.format_str, mode=DEFAULT_MODE)
+DEFAULT_MODE = blax.Mode()
+ff = partial(blax.format_file_in_place, mode=DEFAULT_MODE, fast=True)
+fs = partial(blax.format_str, mode=DEFAULT_MODE)
+
+
+
+### CONSTS
+STR_TO_BOOL = {
+
+    1       : True,
+    '1'     : True,
+    'on'    : True,
+    't'     : True,
+    'true'  : True,
+    'y'     : True,
+    'yes'   : True,
+
+    0       : False,
+    'off'   : False,
+    'f'     : False,
+    'false' : False,
+    'n'     : False,
+    'no'    : False,
+}
+
+
+
+### FUNCTIONS
+import typing as tp
+def booleanify(value:tp.Union[int, str, bytes, bool]) -> bool:
+    '''
+    sauce : https://docs.pydantic.dev/2.0/usage/types/booleans/
+
+    A standard bool field will raise a ValidationError if the value is not one of the following:
+
+    -   A valid boolean (i.e. True or False),
+    -   The integers 0 or 1,
+    -   a str which when converted to lower case is one of '0', 'off', 'f', 'false', 'n', 'no', '1', 'on', 't', 'true', 'y', 'yes'
+    -   a bytes which is valid per the previous rule when decoded to str
+    '''
+
+    if isinstance(value, bool):
+        return value
+
+    elif isinstance(value, str):
+        try:
+            return STR_TO_BOOL[value.lower()]
+        except KeyError:
+            raise ValueError(f'The input value cant be converted to boolean (value="{value}")')
+
+    elif isinstance(value, int):
+        try:
+            return STR_TO_BOOL[value]
+        except KeyError:
+            raise ValueError(f'The input value cant be converted to boolean (value="{value}")')
+
+    elif isinstance(value, bytes):
+        return booleanify(value.decode())
+
+UPDATE_REF_FROM_HYP = booleanify(os.environ.get('UPDATE_REF_FROM_HYP', 'False'))
+
 
 
 @dataclass
 class TestCaseArgs:
-    mode: black.Mode = field(default_factory=black.Mode)
+    mode: blax.Mode = field(default_factory=blax.Mode)
     fast: bool = False
     minimum_version: Optional[Tuple[int, int]] = None
     lines: Collection[Tuple[int, int]] = ()
@@ -57,7 +115,7 @@ def _assert_format_equal(expected: str, actual: str) -> None:
         if conftest.PRINT_FULL_TREE:
             out("Expected tree:", fg="green")
         try:
-            exp_node = black.lib2to3_parse(expected)
+            exp_node = blax.lib2to3_parse(expected)
             bdv = DebugVisitor(print_output=conftest.PRINT_FULL_TREE)
             list(bdv.visit(exp_node))
             expected_out = "\n".join(bdv.list_output)
@@ -66,7 +124,7 @@ def _assert_format_equal(expected: str, actual: str) -> None:
         if conftest.PRINT_FULL_TREE:
             out("Actual tree:", fg="red")
         try:
-            exp_node = black.lib2to3_parse(actual)
+            exp_node = blax.lib2to3_parse(actual)
             bdv = DebugVisitor(print_output=conftest.PRINT_FULL_TREE)
             list(bdv.visit(exp_node))
             actual_out = "\n".join(bdv.list_output)
@@ -92,7 +150,7 @@ class FormatFailure(Exception):
 def assert_format(
     source: str,
     expected: str,
-    mode: black.Mode = DEFAULT_MODE,
+    mode: blax.Mode = DEFAULT_MODE,
     *,
     fast: bool = False,
     minimum_version: Optional[Tuple[int, int]] = None,
@@ -161,13 +219,13 @@ def assert_format(
 def _assert_format_inner(
     source: str,
     expected: Optional[str] = None,
-    mode: black.Mode = DEFAULT_MODE,
+    mode: blax.Mode = DEFAULT_MODE,
     *,
     fast: bool = False,
     minimum_version: Optional[Tuple[int, int]] = None,
     lines: Collection[Tuple[int, int]] = (),
 ) -> None:
-    actual = black.format_str(source, mode=mode, lines=lines)
+    actual = blax.format_str(source, mode=mode, lines=lines)
     if expected is not None:
         _assert_format_equal(expected, actual)
     # It's not useful to run safety checks if we're expecting no changes anyway. The
@@ -178,8 +236,8 @@ def _assert_format_inner(
         # being able to parse the code being formatted. This doesn't always work out
         # when checking modern code on older versions.
         if minimum_version is None or sys.version_info >= minimum_version:
-            black.assert_equivalent(source, actual)
-        black.assert_stable(source, actual, mode=mode, lines=lines)
+            blax.assert_equivalent(source, actual)
+        blax.assert_stable(source, actual, mode=mode, lines=lines)
 
 
 def dump_to_stderr(*output: str) -> str:
@@ -187,8 +245,37 @@ def dump_to_stderr(*output: str) -> str:
 
 
 class BlackBaseTestCase(unittest.TestCase):
-    def assertFormatEqual(self, expected: str, actual: str) -> None:
-        _assert_format_equal(expected, actual)
+    def assertFormatEqual(
+        self,
+        expected: str,
+        actual: str,
+        source:Optional[str]=None,
+        source_path:Optional[str]=None,
+    ) -> None:
+
+        if UPDATE_REF_FROM_HYP:
+            assert (source is not None) and (source_path is not None)
+            with open(source_path, 'w') as f:
+                print('writing to:', source_path, file=sys.stderr)
+                f.write(source)
+                f.write('\n\n\n')
+                f.write('# output')
+                f.write(actual)
+
+        else:
+            try:
+                _assert_format_equal(expected, actual)
+            except:
+                if source_path is not None:
+                    print('>>> source_path:', source_path)
+                    for var_name in ('expected', 'actual'):
+                        source_name, source_ext = os.path.splitext(source_path)
+                        f_debug = os.path.abspath(f'exp/{source_name}.{var_name}{source_ext}')
+                        os.makedirs(os.path.dirname(f_debug), exist_ok=True)
+                        with open(f_debug, 'w+') as f:
+                            f.write(locals()[var_name])
+                            print(f'>>> f_debug.{var_name}:', f_debug)
+                raise
 
 
 def get_base_dir(data: bool) -> Path:
@@ -239,7 +326,7 @@ def get_flags_parser() -> argparse.ArgumentParser:
         type=lambda val: TargetVersion[val.upper()],
         default=(),
     )
-    parser.add_argument("--line-length", default=DEFAULT_LINE_LENGTH, type=int)
+    parser.add_argument("--line-length", default=STYLE_DEFAULT.max_line_length, type=int)
     parser.add_argument(
         "--skip-string-normalization", default=False, action="store_true"
     )
@@ -279,7 +366,7 @@ def get_flags_parser() -> argparse.ArgumentParser:
 def parse_mode(flags_line: str) -> TestCaseArgs:
     parser = get_flags_parser()
     args = parser.parse_args(shlex.split(flags_line))
-    mode = black.Mode(
+    mode = blax.Mode(
         target_versions=set(args.target_version),
         line_length=args.line_length,
         string_normalization=not args.skip_string_normalization,

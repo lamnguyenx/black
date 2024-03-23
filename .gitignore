@@ -18,6 +18,7 @@ pip-wheel-metadata/
 .eggs
 
 src/_black_version.py
+src/_blax_version.py
 .idea
 
 .dmypy.json
@@ -26,3 +27,11 @@ src/_black_version.py
 venv/
 .ipynb_checkpoints/
 node_modules/
+
+# lamnguyenx
+*-exp/
+exp/
+exp
+exp-*/
+exp-*
+exp.*
