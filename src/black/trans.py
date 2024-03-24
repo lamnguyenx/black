@@ -27,10 +27,10 @@ from typing import (
 
 from mypy_extensions import trait
 
-from black.comments import contains_pragma_comment
-from black.lines import Line, append_leaves
-from black.mode import Feature, Mode
-from black.nodes import (
+from .comments import contains_pragma_comment
+from .lines import Line, append_leaves
+from .mode import Feature, Mode
+from .nodes import (
     CLOSING_BRACKETS,
     OPENING_BRACKETS,
     STANDALONE_COMMENT,
@@ -42,8 +42,8 @@ from black.nodes import (
     replace_child,
     syms,
 )
-from black.rusty import Err, Ok, Result
-from black.strings import (
+from .rusty import Err, Ok, Result
+from .strings import (
     assert_is_leaf_string,
     count_chars_in_width,
     get_string_prefix,

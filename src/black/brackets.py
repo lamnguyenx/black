@@ -3,7 +3,7 @@
 from dataclasses import dataclass, field
 from typing import Dict, Final, Iterable, List, Optional, Sequence, Set, Tuple, Union
 
-from black.nodes import (
+from .nodes import (
     BRACKET,
     CLOSING_BRACKETS,
     COMPARATORS,

@@ -3,8 +3,8 @@ from dataclasses import dataclass
 from functools import lru_cache
 from typing import Collection, Final, Iterator, List, Optional, Tuple, Union
 
-from black.mode import Mode, Preview
-from black.nodes import (
+from .mode import Mode, Preview
+from .nodes import (
     CLOSING_BRACKETS,
     STANDALONE_COMMENT,
     WHITESPACE,
