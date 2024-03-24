@@ -4,8 +4,8 @@ from typing import Any, Iterator, List, TypeVar, Union
 from .nodes import Visitor
 from .output import out
 from .parsing import lib2to3_parse
-from blib2to3.pgen2 import token
-from blib2to3.pytree import Leaf, Node, type_repr
+from .blib2to3.pgen2 import token
+from .blib2to3.pytree import Leaf, Node, type_repr
 
 LN = Union[Leaf, Node]
 T = TypeVar("T")

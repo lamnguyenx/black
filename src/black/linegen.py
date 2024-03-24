@@ -76,8 +76,8 @@ from .trans import (
     Transformer,
     hug_power_op,
 )
-from blib2to3.pgen2 import token
-from blib2to3.pytree import Leaf, Node
+from .blib2to3.pgen2 import token
+from .blib2to3.pytree import Leaf, Node
 
 # types
 LeafID = int

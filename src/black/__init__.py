@@ -81,8 +81,8 @@ from .parsing import lib2to3_parse, parse_ast, stringify_ast
 from .ranges import adjusted_lines, convert_unchanged_lines, parse_line_ranges
 from .report import Changed, NothingChanged, Report
 from .trans import iter_fexpr_spans
-from blib2to3.pgen2 import token
-from blib2to3.pytree import Leaf, Node
+from .blib2to3.pgen2 import token
+from .blib2to3.pytree import Leaf, Node
 
 COMPILED = Path(__file__).suffix in (".pyd", ".so")
 

@@ -14,8 +14,8 @@ from .nodes import (
     preceding_leaf,
     syms,
 )
-from blib2to3.pgen2 import token
-from blib2to3.pytree import Leaf, Node
+from .blib2to3.pgen2 import token
+from .blib2to3.pytree import Leaf, Node
 
 # types
 LN = Union[Leaf, Node]

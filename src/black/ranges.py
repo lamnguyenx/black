@@ -15,7 +15,7 @@ from .nodes import (
     last_leaf,
     syms,
 )
-from blib2to3.pgen2.token import ASYNC, NEWLINE
+from .blib2to3.pgen2.token import ASYNC, NEWLINE
 
 
 def parse_line_ranges(line_ranges: Sequence[str]) -> List[Tuple[int, int]]:

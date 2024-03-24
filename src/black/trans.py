@@ -51,8 +51,8 @@ from .strings import (
     normalize_string_quotes,
     str_width,
 )
-from blib2to3.pgen2 import token
-from blib2to3.pytree import Leaf, Node
+from .blib2to3.pgen2 import token
+from .blib2to3.pytree import Leaf, Node
 
 
 class CannotTransform(Exception):

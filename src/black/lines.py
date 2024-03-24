@@ -37,8 +37,8 @@ from .nodes import (
     whitespace,
 )
 from .strings import str_width
-from blib2to3.pgen2 import token
-from blib2to3.pytree import Leaf, Node
+from .blib2to3.pgen2 import token
+from .blib2to3.pytree import Leaf, Node
 
 # types
 T = TypeVar("T")

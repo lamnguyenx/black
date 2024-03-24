@@ -15,9 +15,9 @@ from mypy_extensions import mypyc_attr
 from .cache import CACHE_DIR
 from .mode import Mode, Preview
 from .strings import get_string_prefix, has_triple_quotes
-from blib2to3 import pygram
-from blib2to3.pgen2 import token
-from blib2to3.pytree import NL, Leaf, Node, type_repr
+from .blib2to3 import pygram
+from .blib2to3.pgen2 import token
+from .blib2to3.pytree import NL, Leaf, Node, type_repr
 
 pygram.initialize(CACHE_DIR)
 syms: Final = pygram.python_symbols
