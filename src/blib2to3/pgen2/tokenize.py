@@ -41,8 +41,8 @@ from typing import (
     Union,
 )
 
-from blib2to3.pgen2.grammar import Grammar
-from blib2to3.pgen2.token import (
+from .grammar import Grammar
+from .token import (
     ASYNC,
     AWAIT,
     COMMENT,
