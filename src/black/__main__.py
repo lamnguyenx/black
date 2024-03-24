@@ -1,3 +1,3 @@
-from  import patched_main
+from . import patched_main
 
 patched_main()
