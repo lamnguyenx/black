@@ -10,10 +10,10 @@ import typing as tp
 
 
 # parent
-from ..lines import LinesBlock, Line
-from ..mode import Mode
-from ..blib2to3.pytree import Leaf
-from ..blib2to3.pgen2 import token
+from ..black.lines import LinesBlock, Line
+from ..black.mode import Mode
+from ..black.blib2to3.pytree import Leaf
+from ..black.blib2to3.pgen2 import token
 
 
 # nice_utils
@@ -76,7 +76,7 @@ def format_super_alignment(Inp_Lines_Blocks: tp.List[LinesBlock], mode: Mode):
     # pre-visit (admittedly ugly) for super-alignment
     Complex_Locators: tp.List[ComplexLocator] = []
     for b, Curr_Lines_Block in enumerate(Inp_Lines_Blocks):
-        Curr_First_Line    = Curr_Lines_Block.Content_Lines[0]
+        Curr_First_Line    = Curr_Lines_Block.content_lines[0]
         cur_is_def         = Curr_First_Line.is_def
         cur_is_not_special = Curr_First_Line.is_not_special
 
@@ -86,11 +86,17 @@ def format_super_alignment(Inp_Lines_Blocks: tp.List[LinesBlock], mode: Mode):
             else:
                 starting = 0
 
-            for i in range(len(Curr_Lines_Block.Content_Lines))[starting:]:
-                line = Curr_Lines_Block.Content_Lines[i]
+            for i in range(len(Curr_Lines_Block.content_lines))[starting:]:
+                line = Curr_Lines_Block.content_lines[i]
 
                 Colon_Locator = None
                 for j, leaf in enumerate(line.leaves):
+                    try:
+                        leaf.get_str_len()
+                    except:
+                        import inspect
+                        print('>>leaf:', inspect.getfile(leaf.__class__))
+                        raise
                     if leaf.type == token.COLON:
                         Colon_Locator = SimpleLocator(
                             block_index      = b,
@@ -238,7 +244,7 @@ def format__Complex_Locators(
                     j = Complex_Locator.Colon_Locator.leaf_index
                     d = Complex_Locator.Colon_Locator.str_distance
 
-                    Cur_Leaves = Inp_Lines_Blocks[b].Content_Lines[i].leaves
+                    Cur_Leaves = Inp_Lines_Blocks[b].content_lines[i].leaves
                     Cur_Leaves[j].prefix += ' ' * (
                         d_max - d - (count_leading_spaces(Cur_Leaves[j].prefix)) + 1
                     )
@@ -276,7 +282,7 @@ def format__Complex_Locators(
                     j = Complex_Locator.Equal_Locator.leaf_index
                     d = Complex_Locator.Equal_Locator.str_distance
 
-                    Cur_Leaves = Inp_Lines_Blocks[b].Content_Lines[i].leaves
+                    Cur_Leaves = Inp_Lines_Blocks[b].content_lines[i].leaves
                     Cur_Leaves[j].prefix += ' ' * (
                         d_max - d - (count_leading_spaces(Cur_Leaves[j].prefix)) + 1
                     )
@@ -326,7 +332,7 @@ def format__Complex_Locators(
                     j = Complex_Locator.Equal_Locator.leaf_index
                     d = Complex_Locator.Equal_Locator.str_distance
 
-                    Cur_Leaves = Inp_Lines_Blocks[b].Content_Lines[i].leaves
+                    Cur_Leaves = Inp_Lines_Blocks[b].content_lines[i].leaves
                     Cur_Leaves[j].prefix += ' ' * (
                         d_max__equal - d - (count_leading_spaces(Cur_Leaves[j].prefix)) + 1
                     )

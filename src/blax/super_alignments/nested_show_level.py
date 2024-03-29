@@ -4,7 +4,7 @@
 
 
 # parent
-from ..blib2to3.pytree import Node, Leaf
+from ..black.blib2to3.pytree import Node, Leaf
 
 
 

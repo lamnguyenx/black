@@ -14,7 +14,7 @@ STDIN_PLACEHOLDER = "__BLACK_STDIN_FILENAME__"
 ### CLASSES
 class STYLE_LAMNGUYENX:
     max_line_length = 100
-
+    string_normalization = False
 
 
     class no_empty_lines:

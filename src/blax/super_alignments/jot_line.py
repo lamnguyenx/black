@@ -4,7 +4,7 @@
 
 
 # parent
-from ..lines import Line
+from ..black.lines import Line
 
 
 

@@ -6,8 +6,8 @@
 # technical
 import dataclasses as dc
 import typing as tp
-from ..lines import LinesBlock, Line
-from ..mode import Mode
+from ..black.lines import LinesBlock, Line
+from ..black.mode import Mode
 
 
 # # nice_utils
@@ -45,7 +45,7 @@ def format_super_empty_lines(
     Group_Dict: tp.Dict[int, SomeGroup] = {}
 
     for Curr_Lines_Block in Inp_Lines_Blocks:
-        Curr_First_Line = Curr_Lines_Block.Content_Lines[0]
+        Curr_First_Line = Curr_Lines_Block.content_lines[0]
 
         if getattr(Curr_First_Line, f'is_{parent}'):
             group += 1
@@ -53,13 +53,13 @@ def format_super_empty_lines(
                 Parent_Lines_Block = Curr_Lines_Block,
                 Child_Lines_Blocks = list(),
                 depth              = Curr_First_Line.depth,
-                unpadded_height    = len(Curr_Lines_Block.Content_Lines),
+                unpadded_height    = len(Curr_Lines_Block.content_lines),
                 maybe_str          = ''.join(Curr_Lines_Block.all_lines()).strip(),
             )
 
         elif (group >= 0) and (group in Group_Dict):
             if Curr_First_Line.depth > Group_Dict[group].depth:
-                Group_Dict[group].unpadded_height += len(Curr_Lines_Block.Content_Lines)
+                Group_Dict[group].unpadded_height += len(Curr_Lines_Block.content_lines)
                 Group_Dict[group].Child_Lines_Blocks.append(Curr_Lines_Block)
             else:
                 group += 1
