@@ -17,7 +17,7 @@ from typing import Any, Iterable, Optional, Set
 
 from mypy_extensions import mypyc_attr
 
-from  import WriteBack, format_file_in_place
+from . import WriteBack, format_file_in_place
 from .cache import Cache
 from .mode import Mode
 from .output import err
